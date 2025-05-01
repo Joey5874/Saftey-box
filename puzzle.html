@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle Challenge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      box-shadow: 0 0 15px #000;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    #question {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    .btn {
+      margin: 15px 10px 0;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    #submitBtn {
+      background-color: #3498db;
+      color: white;
+    }
+
+    #submitBtn:hover {
+      background-color: #21618c;
+    }
+
+    #unlockBtn {
+      background-color: #28a745;
+      display: none;
+    }
+
+    #unlockBtn:hover {
+      background-color: #1e7e34;
+    }
+
+    #lockBtn {
+      background-color: #dc3545;
+      display: none;
+    }
+
+    #lockBtn:hover {
+      background-color: #a71d2a;
+    }
+
+    #feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Solve the Puzzle</h1>
+    <p id="question">Loading...</p>
+    <input type="text" id="answer" placeholder="Type your answer here">
+    <br>
+    <button class="btn" id="submitBtn" onclick="checkAnswer()">Submit</button>
+    <p id="feedback"></p>
+    <button class="btn" id="unlockBtn" onclick="unlock()">Unlock Box</button>
+    <button class="btn" id="lockBtn" onclick="lock()">Lock Box</button>
+  </div>
+
+  <script>
+    const puzzles = [
+      { question: "What has keys but can’t open locks?", answer: "piano" },
+      { question: "What gets wetter the more it dries?", answer: "towel" },
+      { question: "I speak without a mouth and hear without ears. What am I?", answer: "echo" },
+      { question: "What has to be broken before you can use it?", answer: "egg" },
+      { question: "The more of me you take, the more you leave behind. What am I?", answer: "footsteps" },
+      { question: "What has a neck but no head?", answer: "bottle" },
+      { question: "What has a face and two hands but no arms or legs?", answer: "clock" }
+    ];
+
+    let currentAnswer = "";
+
+    function generatePuzzle() {
+      const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+      currentAnswer = puzzle.answer.toLowerCase();
+      document.getElementById("question").innerText = puzzle.question;
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("answer").value = "";
+      document.getElementById("unlockBtn").style.display = "none";
+      document.getElementById("lockBtn").style.display = "none";
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById("answer").value.trim().toLowerCase();
+      const feedback = document.getElementById("feedback");
+
+      if (input === currentAnswer) {
+        feedback.innerText = "✅ Correct! You may unlock or lock.";
+        feedback.style.color = "#00ff95";
+        document.getElementById("unlockBtn").style.display = "inline-block";
+        document.getElementById("lockBtn").style.display = "inline-block";
+      } else {
+        feedback.innerText = "❌ Incorrect! Try again.";
+        feedback.style.color = "#ff5050";
+      }
+    }
+
+    function unlock() {
+      window.location.href = "unlock.html";
+    }
+
+    function lock() {
+      fetch("http://192.168.1.42/lock")  // Replace with your Arduino IP
+        .then(response => {
+          if (response.ok) {
+            alert("Box is locked.");
+            window.location.href = "index.html";
+          } else {
+            alert("Failed to lock box.");
+          }
+        })
+        .catch(err => {
+          alert("Error: Could not reach Arduino.");
+        });
+    }
+
+    generatePuzzle();
+  </script>
+</body>
+</html>
